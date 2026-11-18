@@ -1,3 +1,6 @@
+# Script run from experiments.ipynb to produce the stored predict/tau_sweep_results/tau_targeting_metrics.{json,csv}.
+# Kept unchanged for provenance; the maintained version is research/compute_tau_targeting_metrics.py.
+# Do not edit the logic below.
 """Compute Top-K targeting metrics for the five completed XGBoost tau runs.
 
 Uses each tau run's saved three-fold ``all`` XGBoost models. If a model artifact
