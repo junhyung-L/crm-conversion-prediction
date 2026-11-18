@@ -14,11 +14,12 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from sklearn.model_selection import StratifiedKFold, train_test_split
+from split_utils import customer_split, grouped_folds
 
 
 SEED = 1
 TEST_FRAC = 0.15
-N_SPLITS = 3
+N_SPLITS = 5  # manuscript: 5-fold cross-validation
 TOP_KS = (1_000, 2_000, 3_000, 5_000, 10_000)
 TAUS = ("0.50x", "0.75x", "1.00x", "1.25x", "1.50x")
 
@@ -106,20 +107,16 @@ def main():
         X = df[features].to_numpy(dtype=np.float32)
         y = df["is_purchased"].to_numpy(dtype=np.int32)
         indices = np.arange(len(df))
-        train_full, test_idx = train_test_split(
-            indices, test_size=TEST_FRAC, stratify=y, random_state=SEED
-        )
-        train_idx, _ = train_test_split(
-            train_full, test_size=0.17647, stratify=y[train_full], random_state=SEED
-        )
+        groups = df["client_id"].to_numpy()
+        train_full, test_idx, train_idx, _ = customer_split(groups, y, TEST_FRAC, seed=SEED)
         params = load_params(result_path)
         params.update({
             "objective": "binary:logistic", "eval_metric": "aucpr", "booster": "gbtree",
             "tree_method": "hist", "device": device, "random_state": SEED, "n_jobs": -1,
         })
         test_probs = np.zeros(len(test_idx), dtype=np.float32)
-        splitter = StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=SEED)
-        for fold, (fit_rel, val_rel) in enumerate(splitter.split(train_idx, y[train_idx])):
+        splitter = grouped_folds(N_SPLITS, SEED)
+        for fold, (fit_rel, val_rel) in enumerate(splitter.split(train_idx, y[train_idx], groups=groups[train_idx])):
             model_path = model_dir / f"xgb_all_fold{fold}.pkl"
             if model_path.exists():
                 with model_path.open("rb") as handle:

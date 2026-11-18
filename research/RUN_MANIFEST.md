@@ -5,8 +5,8 @@
 The refactor must preserve the historical experiment definition:
 
 - Seed: `1`
-- Holdout test fraction: `0.15`, stratified by `is_purchased`
-- Validation: three-fold `StratifiedKFold` with shuffling and seeded splits
+- Split: customer-level 70/15/15 (`split_utils.customer_split`), stratified by whether a customer ever converts
+- Validation: five-fold `StratifiedGroupKFold` grouped by `client_id` (paper protocol)
 - Primary dataset: `final_data_100k_64.parquet`
 - Primary result report: `predict/result_xgb.json`
 

@@ -13,7 +13,7 @@ from typing import Iterable
 
 SEED = 1
 TEST_FRAC = 0.15
-N_SPLITS = 3
+N_SPLITS = 5  # manuscript: 5-fold cross-validation
 PROJECT_ROOT = Path(__file__).resolve().parent
 DEFAULT_DATASET_NAMES = ("final_data_100k_64.parquet", "final_data_64.parquet")
 

@@ -1,84 +1,91 @@
-# Purchase Conversion Prediction with Dynamic CRM Features
+# Purchase Conversion Prediction with Dynamic Marketing Knowledge
 
 [English](PORTFOLIO.md) | [한국어](PORTFOLIO.ko.md)
 
-## At a glance
+## Summary
 
-This project treats purchase conversion prediction as a targeting problem in an e-commerce CRM setting where the positive rate is only 0.1234%. Rather than increasing model complexity alone, it turns marketing theory into customer-level, time-varying features: purchase-cycle readiness, response timing, accumulated message fatigue, and channel/content fit.
+First-author paper (with Kyungwon Kim, corresponding author; DIVE Lab, Incheon National University), forthcoming in *마케팅연구* (Korean Marketing Association), November 2026: *A Data-Centric AI Framework for E-Commerce Purchase Conversion Prediction via Dynamic Marketing Knowledge Integration*.
 
-On the manuscript's original-distribution holdout, domain-enhanced XGBoost reached F1 0.3806 and PR-AUC 0.3620, with recall rising from 0.3074 to 0.5230 over the baseline feature set. Contacting the top 0.78% of scores captured 95.83% of conversions at a precision of 15.26% (lift 123.7x); the top 10,000 messages reached 53.20% precision (431.1x).
+The study asks whether marketing theory, turned into time-varying features, helps more than model complexity when only 0.1234% of CRM messages lead to a purchase. On 172 million REES46 messages, XGBoost with four theory-based feature groups had the best F1 (0.3806), F2 (0.4549), and PR-AUC (0.3620) of nine models, and lifted recall from 0.3074 to 0.5230. Sending only the top 0.78% of messages captured 95.83% of conversions at 15.26% precision (123.7x lift).
 
-## Framing the prediction problem
+## Challenge
 
-Static customer summaries miss an important part of marketing behaviour: the same customer can be just after a purchase, at a preferred activity hour, or overexposed to a repeated message theme. I organized this context into four feature families.
+- **Extreme imbalance.** One purchase per ~810 messages: accuracy and ROC-AUC say little, so the paper evaluates with PR-AUC, F1, F2, Precision@K, and lift.
+- **Static customer summaries miss context.** The same customer may have just bought, be at a preferred hour, or be over-exposed to one channel.
+- **Fair model comparison.** Deep models given raw sequences and trees given summaries would compare information, not architectures.
 
-| Feature family | Operational signal | Purpose |
+## Approach
+
+| Feature group | Theory | Signals |
 |---|---|---|
-| Purchase and repurchase cycle | customer-specific intervals, repurchase readiness, post-purchase refractory period | represent position in an individual purchase cycle |
-| Temporal response | preferred hour/day alignment and proximity to payday or quarter-end | distinguish sending time from customer context |
-| Marketing fatigue | recency-weighted exposure with channel-specific half-lives | model repeated exposure and recovery together |
-| Channel effectiveness | topic freshness and similarity to prior converting paths | identify a more suitable contact point |
+| ① Purchase and repurchase cycle | Customer lifetime value, cooling-off effect | Days since last purchase, repurchase hazard, post-purchase refractory period |
+| ② Temporal response | Context-dependent preference, calendar effects | Preferred hour/day match, payday and quarter-end proximity |
+| ③ Marketing fatigue | Habituation | Channel-specific decayed exposure (24h push, 48h email, 72h SMS), 30-day open/click rates |
+| ④ Channel effectiveness | Information entropy, path dependency | Topic novelty, similarity to past converting campaigns |
 
-Fatigue is a decayed sum rather than a message count: recent messages weigh more, the effect fades over time, and each channel has its own half-life. It is a predictive signal, not a measured causal effect.
-
-## Data and preparation boundary
-
-The manuscript uses Kaggle REES46’s *E-commerce multichannel direct messaging 2021–2023*: approximately 172 million messaging/response logs across roughly two years, 1.85 million customers, and 1,907 campaigns. It combines four relational tables: interaction logs, campaign metadata, customer attributes, and temporal context.
-
-The documented preparation keeps marketing campaigns tied to customer profiles or promotions and excludes operational transaction notifications, then rebuilds each customer's message history in time order. The manuscript specifies a stratified 70/15/15 train/validation/test split that preserves the original class distribution, with imputation and scaling statistics fitted on training data only.
-
-The executable artefacts retained in this repository have a narrower boundary. `RUN_MANIFEST.md` describes `final_data_100k_64.parquet`, seed 1, a stratified 15% holdout, and three-fold `StratifiedKFold`; the retained XGBoost JSON records a 1,499,900-row holdout confusion matrix with 64 features. This is not the same scale or split as the manuscript experiment, so the two are kept separate.
-
-## Model comparison and findings
-
-The manuscript compares nine models: Random Forest, XGBoost, MLP, CNN, RNN, LSTM, CNN-LSTM, RNN-LSTM, and TabNet. Because accuracy is misleading at this prevalence, it reports PR-AUC, F1, F2, and recall alongside precision. The manuscript describes PR-AUC-driven Optuna optimisation, five-fold validation, early stopping, and pruning.
-
-| XGBoost holdout metric | Baseline features | Domain features |
-|---|---:|---:|
-| Precision | 0.4199 | 0.2991 |
-| Recall | 0.3074 | 0.5230 |
-| F1 | 0.3550 | 0.3806 |
-| F2 | 0.3248 | 0.4549 |
-| PR-AUC | 0.3177 | 0.3620 |
-
-The precision–recall trade-off matters here: more converters are captured, while precision falls. Choosing a preferred operating point would require campaign contact cost and the cost of unnecessary messages. The 13.1% figure in the manuscript is a TabNet **F2-score** change (0.3659 to 0.4138), not an observed marketing-cost reduction.
-
-The manuscript's top-K analysis reports that the top 0.78% by predicted score captured 95.83% of holdout conversions. Precision@K at that cut was 15.26% (lift 123.7x over random sending); at the top 10,000 messages it was 53.20% (431.1x). It is a ranking result on the holdout, not a measured campaign outcome.
+Label: a purchase within 24 hours of a message, credited to the last message before it. Split: customer-level stratified 70/15/15; 5-fold stratified cross-validation; Optuna maximising validation PR-AUC.
 
 ## Decisions
 
-**1. Where to spend the modelling effort.**
-Options: stack more model capacity (seven of the nine compared models are neural or tabular-DL), or encode marketing knowledge as features and keep a tree model.
-Choice: theory-derived features on XGBoost, with the deep models kept as comparison points.
-Why: at a 0.1234% positive rate on sparse tabular logs, the missing information is customer context (cycle position, timing, exposure history), which more layers cannot recover from static summaries.
-Cost: every feature family needs a hand-specified definition, and the gain came as higher recall with lower precision (0.4199 to 0.2991), not a uniform improvement.
+**1. Features over model capacity.** Options: deeper sequence models on raw logs, or theory-based features on a tree model. Choice: features, with nine models compared. Why: at 0.1234% positives on sparse tabular logs, the missing piece is customer context. Cost: every feature needs a hand-written definition, and the gain came as higher recall at lower precision (0.4199 → 0.2991).
 
-**2. How to model fatigue.**
-Options: count messages received; or sum exposures with exponential decay and a different half-life per channel.
-Choice: decayed sum, with initial half-lives of 24 hours for push, 48 hours for email, and 72 hours for SMS (`research/preprocessing_fast.py`).
-Why: a count treats a message from yesterday and one from last month the same; decay lets exposure and recovery both enter the feature.
-Cost: the half-lives are assumptions, not learned. The retained sweep scaling all of them from 0.50x to 1.50x keeps PR-AUC between 0.3527 and 0.3613, so the result is not fragile to that choice, but individual half-lives were not estimated.
+**2. Same information for every model.** Options: give neural models raw sequences, or give all models the same feature vector. Choice: the same vector; sequence models receive it as a length-1 sequence. Why: otherwise differences reflect input information, not architecture. Cost: recurrent models cannot use their sequence strength, which the paper states.
 
-**3. How to handle imbalance and choose the operating point.**
-Options: resample the training data to balance classes; or keep the original distribution, tune `scale_pos_weight`, and pick a threshold afterwards.
-Choice: the second. In the retained code, Optuna maximises PR-AUC over three-fold stratified validation (`research/xgb.py`), and the decision threshold is the F1-maximising point on validation predictions, not on the test split.
-Why: the holdout keeps the real 0.1234% rate, so the reported precision and recall describe what a campaign would actually see.
-Cost: F1 weighs a missed buyer and a wasted message equally; a real campaign would set the threshold from contact cost, which is not available.
+**3. Fatigue as a decayed sum.** Options: count messages, or sum exposures with channel-specific exponential decay. Choice: decay with half-lives of 24h (push), 48h (email), 72h (SMS). Why: yesterday's message should weigh more than last month's. Cost: the half-lives are assumptions; a 0.50x–1.50x sweep kept PR-AUC within 0.3527–0.3613.
 
-**4. What to claim from the targeting analysis.**
-Options: translate the top-0.78% result into money saved; or report it as a ranking simulation.
-Choice: ranking simulation only.
-Why: there is no send log, unit cost, or control group, so savings or uplift cannot be computed.
-Cost: the headline is less striking than a savings figure, but every number in it can be defended.
+**4. Report targeting as Precision@K and lift.** Options: convert the top-K result into money saved, or report hit rate and lift by budget. Choice: Precision@K and lift. Why: no unit cost or control group, and the operating point depends on channel cost. Cost: a less striking headline, but every number is defensible.
 
-## What remains useful—and what remains open
+## Results
 
-SHAP and ablation analyses provide an interpretable view of associations: fatigue and temporal-response features act as early filtering signals, while purchase-cycle and recent high-engagement signals contribute later in the model’s ranking. They do not establish treatment effects.
+**Nine models, original-distribution holdout** (baseline → with domain features):
 
-The repository retains preprocessing, model, and half-life sensitivity scripts plus compact JSON/CSV result files, but not the source Parquet files or trained model binaries. A stronger next iteration would version the data and row counts, fix package versions and split timestamps in one manifest, evaluate time-ordered generalisation, and add a randomized or uplift design before making campaign-impact claims.
+| Model | Precision | Recall | F1 | F2 | PR-AUC |
+|---|---|---|---|---|---|
+| **XGBoost** | 0.4199 → 0.2991 | 0.3074 → 0.5230 | 0.3550 → **0.3806** | 0.3248 → **0.4549** | 0.3177 → **0.3620** |
+| Random Forest | 0.2371 → 0.3041 | 0.6456 → 0.4819 | 0.3468 → 0.3729 | 0.4802 → 0.4315 | 0.2887 → 0.3382 |
+| MLP | 0.2561 → 0.2602 | 0.4144 → 0.4635 | 0.3165 → 0.3333 | 0.3688 → 0.4009 | 0.2675 → 0.3072 |
+| CNN | 0.2680 → 0.2392 | 0.3290 → 0.3549 | 0.2954 → 0.2858 | 0.3147 → 0.3236 | 0.2302 → 0.2546 |
+| RNN | 0.2381 → 0.2598 | 0.4695 → 0.4965 | 0.3159 → 0.3411 | 0.3931 → 0.4200 | 0.2629 → 0.3195 |
+| LSTM | 0.2163 → 0.2514 | 0.6035 → 0.5084 | 0.3185 → 0.3364 | 0.4444 → 0.4221 | 0.2688 → 0.3166 |
+| CNN-LSTM | 0.2083 → 0.2393 | 0.6272 → 0.4155 | 0.3127 → 0.3037 | 0.4473 → 0.3621 | 0.2648 → 0.2647 |
+| RNN-LSTM | 0.2519 → 0.2983 | 0.4290 → 0.4149 | 0.3174 → 0.3470 | 0.3761 → 0.3848 | 0.2661 → 0.3176 |
+| TabNet | 0.2806 → 0.2690 | 0.3960 → 0.4781 | 0.3285 → 0.3443 | 0.3659 → 0.4138 | 0.2826 → 0.3182 |
 
-## Evidence
+**Feature-group ablation (XGBoost):** fatigue recall +72.58%, F2 +41.66%, PR-AUC +10.40%; temporal response recall +40.07%, PR-AUC +7.47%; purchase cycle PR-AUC +1.08%; channel effectiveness PR-AUC +0.21%.
 
-- [Run manifest](research/RUN_MANIFEST.md)
-- [Retained XGBoost result](research/predict/result_xgb.json)
-- [Preprocessing](research/preprocessing_fast.py), [XGBoost experiment](research/xgb.py), and [half-life sweep](research/run_xgb_tau_sweep.py)
+**Top-K targeting:** top 10,000 messages (0.04%): precision 53.20%, lift 431.1x; top 200,000 (0.78%): precision 15.26%, recall 95.83%, lift 123.7x.
+
+**SHAP:** fatigue features screen out non-responders first, temporal features adjust timing, and purchase-cycle and recent-click features finalise the probability.
+
+## Reproducibility check
+
+A code review in November 2026 found two places where the public code differed
+from the paper's protocol: rows were split at random rather than by customer,
+and the first-purchase recency feature could see a first purchase dated after
+the message. The code now follows the paper (`research/split_utils.py`:
+customer-level 70/15/15 split and grouped 5-fold CV; first purchases after the
+send time are masked in `preprocessing_fast.py`). A re-check on the 10M-row
+sample, one model per setting with the stored hyperparameters:
+
+| 10M-row sample, XGBoost (stored params) | PR-AUC | F1 | Top-0.78% recall |
+|---|---:|---:|---:|
+| All features, previous code | 0.3678 | 0.3863 | 96.38% |
+| All features, paper protocol | 0.3647 | 0.3755 | 97.37% |
+| Baseline, previous code | 0.3426 | 0.3713 | 94.00% |
+| Baseline, paper protocol | 0.3107 | 0.3615 | 94.47% |
+
+The full model is essentially unchanged, and the gain from the domain features
+over the baseline grows (PR-AUC +7.4% → +17.4%). ROC-AUC stays near 0.997 in
+every setting, which reflects the mass of easy negatives rather than leakage.
+
+## Limitations
+
+- Observational data: predictive contribution, not causal effect; the paper proposes A/B tests, propensity matching, or difference-in-differences next.
+- One platform; half-lives and purchase cycles may differ elsewhere.
+- Fixed exploratory half-lives rather than per-customer estimates.
+- No forward-chaining validation across years or quarters.
+- Compute and energy efficiency not measured.
+
+## Next
+
+Learn half-lives per customer, add forward-chaining validation, and test whether fatigue-aware targeting changes purchases in a randomised campaign.

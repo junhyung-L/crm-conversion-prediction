@@ -4,6 +4,7 @@ warnings.filterwarnings("ignore")
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split, StratifiedKFold
+from split_utils import customer_split, grouped_folds
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score, fbeta_score, roc_auc_score, average_precision_score, confusion_matrix, precision_recall_curve
@@ -56,7 +57,7 @@ PATH_PARQUET = str(resolve_parquet_path())
 
 N_TRIALS = 15
 TEST_FRAC = 0.15
-N_SPLITS = 3
+N_SPLITS = 5  # manuscript: 5-fold cross-validation
 
 
 cols_v0 = [
@@ -158,8 +159,9 @@ experiments = [
 all_indices = np.arange(len(df))
 y_all = df[TARGET].values.astype(np.int32)
 
-idx_tr_full, idx_te = train_test_split(all_indices, test_size=TEST_FRAC, stratify=y_all, random_state=SEED)
-idx_tr, idx_va = train_test_split(idx_tr_full, test_size=0.17647, stratify=y_all[idx_tr_full], random_state=SEED)
+# Customer-level 70/15/15 split: each customer's messages sit in one set only.
+groups_all = df["client_id"].values
+idx_tr_full, idx_te, idx_tr, idx_va = customer_split(groups_all, y_all, TEST_FRAC, seed=SEED)
 
 raw_ratio = (y_all[idx_tr] == 0).sum() / float(max(1, (y_all[idx_tr] == 1).sum()))
 print(f"[COST-SENSITIVE] Full Train Set Negative/Positive Ratio = {raw_ratio:.2f}")
@@ -199,9 +201,9 @@ for exp_idx, (exp_name, feat_cols) in enumerate(experiments):
         lr = trial.suggest_float('lr', 1e-4, 1e-2, log=True)
         dropout = trial.suggest_float('dropout', 0.1, 0.4)
 
-        skf = StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=TUNING_SEED)
+        skf = grouped_folds(N_SPLITS, TUNING_SEED)
         cv_scores = []
-        for fold_idx, (tr_idx, val_idx) in enumerate(skf.split(idx_tr, y_all[idx_tr])):
+        for fold_idx, (tr_idx, val_idx) in enumerate(skf.split(idx_tr, y_all[idx_tr], groups=groups_all[idx_tr])):
             fold_tr_idx = idx_tr[tr_idx]
             fold_va_idx = idx_tr[val_idx]
             X_tr_fold, Y_tr_fold = X_feat_matrix[fold_tr_idx], y_all[fold_tr_idx]
@@ -236,8 +238,8 @@ for exp_idx, (exp_name, feat_cols) in enumerate(experiments):
 
     val_probs_ensemble = np.zeros(len(Xva_t), dtype=np.float32)
     test_probs_ensemble = np.zeros(len(idx_te), dtype=np.float32)
-    skf = StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=SEED)
-    for fold_idx, (tr_idx, val_idx) in enumerate(skf.split(idx_tr, y_all[idx_tr])):
+    skf = grouped_folds(N_SPLITS, SEED)
+    for fold_idx, (tr_idx, val_idx) in enumerate(skf.split(idx_tr, y_all[idx_tr], groups=groups_all[idx_tr])):
         sub_tr_idx = idx_tr[tr_idx]
         sub_va_idx = idx_tr[val_idx]
         X_tr_full_f, Y_tr_full_f = X_feat_matrix[sub_tr_idx], y_all[sub_tr_idx]

@@ -893,7 +893,7 @@ def run_bulletproof_feature_pipeline(tau_map=None):
     has_p_mask = (df["total_purchases"].values > 0)
     df["has_prior_purchase"] = has_p_mask.astype(np.float32)
 
-    # Recency calculations: static first_purchase_date uses shift=False to avoid Row 0 NaN!
+    # Recency calculations: static first_purchase_date uses shift=False to avoid Row 0 NaN; values from the future are masked below.
     RECENCY_DYNAMIC = [
         ("opened_first_time_at",  "avg_time_since_last_open"),
         ("clicked_first_time_at", "avg_time_since_last_click"),
@@ -912,6 +912,8 @@ def run_bulletproof_feature_pipeline(tau_map=None):
     if "first_purchase_date" in df.columns:
         src_hrs_fp = safe_dt_to_hours(df["first_purchase_date"])
         rec_hrs_fp = fast_prior_ffill_shift(c_codes, sent_at_hrs, src_hrs_fp, shift=False)
+        # A first purchase dated after this message is not known at send time (t-1 rule).
+        rec_hrs_fp[rec_hrs_fp < 0] = np.nan
         med_fp = float(np.nanmedian(rec_hrs_fp)) if np.isfinite(np.nanmedian(rec_hrs_fp)) else 24.0
         df["avg_time_since_first_purchase"] = np.nan_to_num(rec_hrs_fp, nan=med_fp, posinf=med_fp, neginf=0.0).clip(0, 8760).astype(np.float32)
     else:
