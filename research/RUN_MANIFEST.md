@@ -25,4 +25,4 @@ python research\verify_baseline.py --result "$env:MFA_RESULTS_DIR\result_xgb.jso
 ```
 
 An exact match can require a matched Python/library environment and the same hardware settings.
-The original dependency versions are not stored in this repository, so version confirmation remains user input required.
+The original dependency versions are not stored in this repository, so exact package versions are unknown.

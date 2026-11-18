@@ -17,8 +17,11 @@ Contacting the top 0.78% of messages captured 95.83% of conversions (precision
 15.26%, lift 123.7x); the top 10,000 reached 53.20% precision (lift 431.1x).
 
 **Scope.** Offline holdout on one platform's observational data: predictive
-contribution, not causal effect. Data not included;
-`python research\verify_baseline.py` checks the stored results without it.
+contribution, not causal effect. Data not included. Headline numbers are the
+paper's (Tables 3 and 7, full test set); the stored
+`research/predict/result_xgb.json` is the 10M-row sample run behind the
+half-life table (Table 6: PR-AUC 0.3534, F1 0.3833), which
+`python research\verify_baseline.py` checks without data.
 
 ## Research question
 
@@ -144,4 +147,4 @@ research/
 images/paper/                  # figures
 ```
 
-[Case study](PORTFOLIO.md) · [Academic summary](docs/ACADEMIC_SUMMARY.md) · [CV bullets](docs/CV_BULLETS.md)
+[Case study](PORTFOLIO.md) · [Academic summary](docs/ACADEMIC_SUMMARY.md)
