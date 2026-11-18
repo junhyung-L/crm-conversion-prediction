@@ -1,16 +1,27 @@
-# Dynamic Marketing Knowledge for Purchase Conversion Prediction
+# Purchase Conversion Prediction with Dynamic CRM Features
 
-[한국어](README.ko.md)
+[한국어](README.ko.md) · [Case study](PORTFOLIO.md)
 
-> [Project details](PORTFOLIO.md)
+Predicts which recipients of e-commerce CRM messages will make a purchase,
+using features built from marketing theory (purchase cycle, response timing,
+message fatigue, channel fit) on about 172 million REES46 messaging logs, where
+only 0.1234% of holdout rows convert.
 
-An evidence-based data-centric AI study of purchase conversion prediction in an
-extremely imbalanced e-commerce CRM setting. The project converts marketing
-theory into dynamic features and compares tree-based machine learning with deep
-learning and tabular deep-learning models.
+**Why it matters.** Sending every campaign to everyone costs money and wears
+customers out, so the useful output is a ranking of who is worth contacting.
+At this conversion rate accuracy is meaningless; the question is how many
+buyers a model finds and how many messages it wastes doing so.
 
-> This README separates study-level reported values from results retained in
-> executable code artifacts.
+**Result (manuscript-reported).** On the original-distribution holdout, adding
+the domain features to XGBoost raised F1 from 0.3550 to 0.3806 and PR-AUC from
+0.3177 to 0.3620. Recall rose from 30.74% to 52.30% while precision fell from
+0.4199 to 0.2991, so the model finds more buyers at the cost of more wasted
+contacts. Selecting the top 0.78% of scores captured 95.83% of holdout
+conversions: an offline ranking result, not realised savings or causal uplift.
+
+The manuscript is under peer review and not included; the raw logs are not
+redistributed. A smaller XGBoost run retained in this repository can be checked
+without data (see [How to run](#how-to-run)).
 
 ## Research question
 
@@ -26,8 +37,10 @@ The research operationalizes four feature groups:
 
 ## Dataset and evaluation
 
-- **Source data:** two years of multichannel e-commerce CRM logs
-- **Scale:** approximately 172 million messaging events
+- **Source data:** Kaggle REES46 *E-commerce multichannel direct messaging
+  2021–2023*, about two years of logs
+- **Scale (manuscript):** approximately 172 million messaging events, about
+  1.85 million customers, 1,907 campaigns
 - **Target:** purchase conversion
 - **Holdout conversion rate:** 0.1234%
 - **Models compared:** 9 ML, neural-network, and tabular-DL models
@@ -53,45 +66,100 @@ the flow above.
 
 ## Key results
 
-The submitted research study reports that the domain-enhanced XGBoost model achieved the best
-overall classification performance:
+Manuscript-reported XGBoost results on the original-distribution holdout:
 
-| Measure | Result |
+| Measure | Baseline features | Domain-enhanced features |
+|---|---:|---:|
+| Precision | 0.4199 | 0.2991 |
+| Recall | 30.74% | 52.30% |
+| F1 score | 0.3550 | 0.3806 |
+| F2 score | 0.3248 | 0.4549 |
+| PR-AUC | 0.3177 | 0.3620 |
+
+- Relative recall improvement: 70.1%.
+- Targeting at the top 0.78% of scores: 95.83% of conversions captured, with
+  99.22% fewer selected messages than contacting every candidate.
+
+Retained in this repository (a separate, smaller run on
+`final_data_100k_64.parquet`, 64 features, 1,499,900-row holdout):
+
+| Measure | Domain-enhanced XGBoost |
 |---|---:|
-| F1 score | 0.3806 |
-| PR-AUC | 0.3620 |
-| Recall, baseline -> domain-enhanced | 30.74% -> 52.30% |
-| Relative recall improvement | 70.1% |
-| Targeting at top 0.78% | 95.83% of conversions captured |
-| Message-volume reduction at that threshold | 99.22% |
+| F1 score | 0.3833 |
+| PR-AUC | 0.3534 |
+| Source | `research/predict/result_xgb.json` |
 
-These results should be interpreted as study-specific evidence from the documented
-dataset and holdout experiment, not as a general causal estimate. The study identifies
-single-platform generalization, fixed fatigue half-life parameters, causal
-inference, and unmeasured compute efficiency as limitations.
+The two result sets come from different data scales and splits and are not
+combined. Across fatigue half-life multipliers from 0.50x to 1.50x, the
+retained sweep keeps PR-AUC between 0.3527 and 0.3613
+(`research/predict/tau_sweep_results/`).
+
+## What the results do and do not mean
+
+- They are study-specific evidence from one platform's observational data and
+  a random holdout, not a general causal estimate.
+- The top-K figures are a simulated ranking on the holdout. There is no live
+  send record, unit cost, or control group, so they are not realised savings or
+  incremental conversions.
+- Precision fell while recall rose; choosing an operating point would need the
+  cost of a contact and of a missed buyer, which are not available.
+- The study lists single-platform generalization, fixed fatigue half-life
+  parameters, the lack of causal inference, and unmeasured compute efficiency
+  as limitations.
+- SHAP results are associations, not evidence of causal uplift.
 
 ## Research figures
 
-The figures summarise the documented research workflow and reported results.
-They replace the previously top-level image set; the prior images remain under
-`images/legacy/` for traceability.
+![Figure 1. Data-to-evaluation framework with the manuscript's result panels](images/paper/figure-01.png)
 
-![Figure 1. Proposed data-to-evaluation framework](images/paper/figure-01.png)
+*Figure 1. The research workflow: four CRM input tables, baseline and four
+domain-feature groups, nine models, and the manuscript's evaluation panels
+(model comparison, feature-group ablation, top-K targeting, half-life
+sensitivity, SHAP). The result values in the panels are the manuscript-reported
+values in the tables above.*
 
-*Figure 1. The research workflow: CRM inputs, domain-informed
-features, model comparison, targeting evaluation, and explanation analysis.*
+![Figure 2. SHAP contribution ranking by knowledge category](images/paper/figure-02.png)
 
-![Figure 2. Comparative evaluation and ablation evidence](images/paper/figure-02.png)
+*Figure 2. Features ranked by positive and negative SHAP contribution, coloured
+by the knowledge category they belong to (baseline, fatigue, temporal response,
+channel effectiveness, purchase cycle).*
 
-*Figure 2. Research-study comparisons cover model performance, feature
-ablation, targeting, and parameter sensitivity. These are reported study
-results, distinct from the JSON output retained in this repository.*
+![Figure 3. SHAP summary plot](images/paper/figure-03.png)
 
-![Figure 3. SHAP feature-direction analysis](images/paper/figure-03.png)
+*Figure 3. SHAP values summarize the direction and relative contribution of the
+features in the documented model run. They are associational, not evidence of
+causal uplift.*
 
-*Figure 3. SHAP values summarize the direction and relative contribution of
-the retained features in the documented model run. They are associational,
-not evidence of causal uplift.*
+## How to run
+
+An end-to-end run is not possible from this checkout: the source data, fitted
+models, dependency lockfile, and original environment are not included.
+
+Check the retained result without data (standard library only):
+
+```powershell
+python research\verify_baseline.py
+```
+
+It confirms that `research/predict/result_xgb.json` matches the saved metric
+contract (F1, PR-AUC, recall, precision, top-K hits). It is a report-regression
+check, not a model rerun.
+
+With the original Parquet file, set paths explicitly and rerun XGBoost:
+
+```powershell
+pip install -r requirements.txt
+$env:MFA_DATASET_PATH = 'D:\path\to\final_data_100k_64.parquet'
+$env:MFA_RESULTS_DIR = 'D:\path\to\new-results'
+python research\xgb.py
+python research\verify_baseline.py --result "$env:MFA_RESULTS_DIR\result_xgb.json"
+```
+
+Other entry points are `research/preprocessing_fast.py` (feature engineering)
+and `research/run_xgb_tau_sweep.py` (half-life sweep). `requirements.txt` lists
+packages derived from the imports; the original versions were not recorded, so
+an exact numerical match is not guaranteed. Details are in
+[research/RUN_MANIFEST.md](research/RUN_MANIFEST.md).
 
 ## Repository layout
 
@@ -103,26 +171,11 @@ not evidence of causal uplift.*
 │   ├── CNN.py, RNN.py, LSTM.py        # Neural baselines
 │   ├── CNNLSTM.py, RNNLSTM.py, tabnet.py
 │   ├── run_xgb_tau_sweep.py           # Fatigue half-life sensitivity sweep
+│   ├── verify_baseline.py             # Report-regression check
 │   └── predict/                       # Compact JSON/CSV experiment outputs
-├── images/
-│   ├── paper/                         # Research figures retained for this project
-│   └── legacy/                        # Previous repository images
-└── references/
-    └── legacy-prior-research/         # Prior reference snapshot
+├── images/paper/                      # Research figures
+└── references/                        # Prior-literature notes
 ```
-
-## Reproducibility notes
-
-The large Parquet datasets and fitted model binaries are intentionally excluded
-from Git (`*.parquet`, `*.pkl`). Configure local data paths or the relevant
-environment variables before running the research scripts. The compact result
-reports are retained under `research/predict/` so reported evaluation results
-can be inspected without downloading multi-gigabyte artifacts.
-
-## References
-
-Prior-literature notes retained during project development are available under
-`references/legacy-prior-research/`.
 
 ## Documentation
 
@@ -130,12 +183,5 @@ Prior-literature notes retained during project development are available under
 - [Repository review](docs/PROJECT_REVIEW.md)
 - [Academic summary](docs/ACADEMIC_SUMMARY.md)
 - [CV bullets](docs/CV_BULLETS.md)
-
-## How to run
-
-An end-to-end command is **not yet verified** because the source data, fitted models, dependency lockfile, and portable path configuration are not included.
-The executable research entry points are `research/preprocessing_fast.py`, `research/xgb.py`, and `research/run_xgb_tau_sweep.py`.
-See `docs/PROJECT_REVIEW.md` before attempting to run them.
-
-The refactored path configuration and result-regression procedure are documented in [research/RUN_MANIFEST.md](research/RUN_MANIFEST.md).
-Install the import-derived packages from `requirements.txt`, then pin the original environment before asserting exact numerical reproduction.
+- [Run manifest](research/RUN_MANIFEST.md)
+- Prior-literature notes: `references/legacy-prior-research/`

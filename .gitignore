@@ -8,3 +8,4 @@ research/predict/tau_sweep_results/models/
 .ipynb_checkpoints/
 __pycache__/
 .repo-analysis/
+*.pyc

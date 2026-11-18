@@ -5,7 +5,7 @@ Use only after confirming your exact role and contribution. These bullets do not
 ## Data science
 
 - Developed a purchase-conversion modeling workflow for an e-commerce CRM setting with a 0.1234% holdout conversion rate, engineering dynamic features for repurchase cycles, timing, marketing fatigue, and channel effectiveness.
-- Benchmarked nine ML and deep-learning model families with stratified holdout evaluation, three-fold validation, and feature-group ablations; retained experiment records report XGBoost F1 of 0.3806 and PR-AUC of 0.3620.
+- Benchmarked nine ML and deep-learning model families with stratified holdout evaluation, three-fold validation, and feature-group ablations; the manuscript reports XGBoost F1 of 0.3806 and PR-AUC of 0.3620 on the original-distribution holdout.
 - Designed a fatigue half-life sensitivity study and Top-K targeting analysis to evaluate ranking utility beyond aggregate classification metrics.
 
 ## Research

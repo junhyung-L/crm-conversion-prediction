@@ -44,7 +44,9 @@ Scores are an assessment of the repository, not measured facts.
 
 ## Evidence notes
 
-- Main methodology and headline results: retained code and experiment records.
+- Headline results (F1 0.3806, PR-AUC 0.3620, top-0.78% targeting): the
+  manuscript under review, not included here. Retained code run (F1 0.3833,
+  PR-AUC 0.3534): `research/predict/result_xgb.json`.
 - XGBoost split and validation setup: `research/xgb.py`.
 - Sensitivity reports: `research/predict/tau_sweep_results/`.
 - Reproduction utilities: `research/project_config.py`,

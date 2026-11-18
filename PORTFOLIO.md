@@ -45,6 +45,32 @@ The precision–recall trade-off matters here: more converters are captured, whi
 
 The manuscript’s top-K analysis further reports that selecting the top 0.78% by predicted score captured 95.83% of holdout conversions while reducing the selected message volume by 99.22%. This is a simulated ranking result on that holdout. The repository does not contain a live send record, unit costs, or a control group, so it should not be presented as realised savings or incremental conversion.
 
+## Decisions
+
+**1. Where to spend the modelling effort.**
+Options: stack more model capacity (seven of the nine compared models are neural or tabular-DL), or encode marketing knowledge as features and keep a tree model.
+Choice: theory-derived features on XGBoost, with the deep models kept as comparison points.
+Why: at a 0.1234% positive rate on sparse tabular logs, the missing information is customer context (cycle position, timing, exposure history), which more layers cannot recover from static summaries.
+Cost: every feature family needs a hand-specified definition, and the gain came as higher recall with lower precision (0.4199 to 0.2991), not a uniform improvement.
+
+**2. How to model fatigue.**
+Options: count messages received; or sum exposures with exponential decay and a different half-life per channel.
+Choice: decayed sum, with initial half-lives of 24 hours for push, 48 hours for email, and 72 hours for SMS (`research/preprocessing_fast.py`).
+Why: a count treats a message from yesterday and one from last month the same; decay lets exposure and recovery both enter the feature.
+Cost: the half-lives are assumptions, not learned. The retained sweep scaling all of them from 0.50x to 1.50x keeps PR-AUC between 0.3527 and 0.3613, so the result is not fragile to that choice, but individual half-lives were not estimated.
+
+**3. How to handle imbalance and choose the operating point.**
+Options: resample the training data to balance classes; or keep the original distribution, tune `scale_pos_weight`, and pick a threshold afterwards.
+Choice: the second. In the retained code, Optuna maximises PR-AUC over three-fold stratified validation (`research/xgb.py`), and the decision threshold is the F1-maximising point on validation predictions, not on the test split.
+Why: the holdout keeps the real 0.1234% rate, so the reported precision and recall describe what a campaign would actually see.
+Cost: F1 weighs a missed buyer and a wasted message equally; a real campaign would set the threshold from contact cost, which is not available.
+
+**4. What to claim from the targeting analysis.**
+Options: translate the top-0.78% result into money saved; or report it as a ranking simulation.
+Choice: ranking simulation only.
+Why: there is no send log, unit cost, or control group, so savings or uplift cannot be computed.
+Cost: the headline is less striking than a savings figure, but every number in it can be defended.
+
 ## What remains useful—and what remains open
 
 SHAP and ablation analyses provide an interpretable view of associations: fatigue and temporal-response features act as early filtering signals, while purchase-cycle and recent high-engagement signals contribute later in the model’s ranking. They do not establish treatment effects.
