@@ -57,27 +57,6 @@ Label: a purchase within 24 hours of a message, credited to the last message bef
 
 **SHAP:** fatigue features screen out non-responders first, temporal features adjust timing, and purchase-cycle and recent-click features finalise the probability.
 
-## Reproducibility check
-
-A code review in November 2026 found two places where the public code differed
-from the paper's protocol: rows were split at random rather than by customer,
-and the first-purchase recency feature could see a first purchase dated after
-the message. The code now follows the paper (`research/split_utils.py`:
-customer-level 70/15/15 split and grouped 5-fold CV; first purchases after the
-send time are masked in `preprocessing_fast.py`). A re-check on the 10M-row
-sample, one model per setting with the stored hyperparameters:
-
-| 10M-row sample, XGBoost (stored params) | PR-AUC | F1 | Top-0.78% recall |
-|---|---:|---:|---:|
-| All features, previous code | 0.3678 | 0.3863 | 96.38% |
-| All features, paper protocol | 0.3647 | 0.3755 | 97.37% |
-| Baseline, previous code | 0.3426 | 0.3713 | 94.00% |
-| Baseline, paper protocol | 0.3107 | 0.3615 | 94.47% |
-
-The full model is essentially unchanged, and the gain from the domain features
-over the baseline grows (PR-AUC +7.4% → +17.4%). ROC-AUC stays near 0.997 in
-every setting, which reflects the mass of easy negatives rather than leakage.
-
 ## Limitations
 
 - Observational data: predictive contribution, not causal effect; the paper proposes A/B tests, propensity matching, or difference-in-differences next.
