@@ -16,6 +16,10 @@ holdout; recall rose from 0.3074 to 0.5230 over the baseline features.
 Contacting the top 0.78% of messages captured 95.83% of conversions (precision
 15.26%, lift 123.7x); the top 10,000 reached 53.20% precision (lift 431.1x).
 
+**Scope.** Offline holdout on one platform's observational data: predictive
+contribution, not causal effect. Data not included;
+`python research\verify_baseline.py` checks the stored results without it.
+
 ## Research question
 
 Can theory-based dynamic features improve conversion prediction more than
