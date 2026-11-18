@@ -6,7 +6,7 @@
 
 This project treats purchase conversion prediction as a targeting problem in an e-commerce CRM setting where the positive rate is only 0.1234%. Rather than increasing model complexity alone, it turns marketing theory into customer-level, time-varying features: purchase-cycle readiness, response timing, accumulated message fatigue, and channel/content fit.
 
-On the manuscript's original-distribution holdout, domain-enhanced XGBoost reached F1 0.3806 and PR-AUC 0.3620, with recall rising from 0.3074 to 0.5230 over the baseline feature set. Contacting the top 0.78% of scores captured 95.83% of conversions at a precision of about 15%, roughly 120x the base rate.
+On the manuscript's original-distribution holdout, domain-enhanced XGBoost reached F1 0.3806 and PR-AUC 0.3620, with recall rising from 0.3074 to 0.5230 over the baseline feature set. Contacting the top 0.78% of scores captured 95.83% of conversions at a precision of 15.26% (lift 123.7x); the top 10,000 messages reached 53.20% precision (431.1x).
 
 ## Framing the prediction problem
 
@@ -43,7 +43,7 @@ The manuscript compares nine models: Random Forest, XGBoost, MLP, CNN, RNN, LSTM
 
 The precision–recall trade-off matters here: more converters are captured, while precision falls. Choosing a preferred operating point would require campaign contact cost and the cost of unnecessary messages. The 13.1% figure in the manuscript is a TabNet **F2-score** change (0.3659 to 0.4138), not an observed marketing-cost reduction.
 
-The manuscript's top-K analysis reports that the top 0.78% by predicted score captured 95.83% of holdout conversions. With the 0.1234% base rate, that implies a precision of about 15% and a lift of roughly 120x (derived values). It is a ranking result on the holdout, not a measured campaign outcome.
+The manuscript's top-K analysis reports that the top 0.78% by predicted score captured 95.83% of holdout conversions. Precision@K at that cut was 15.26% (lift 123.7x over random sending); at the top 10,000 messages it was 53.20% (431.1x). It is a ranking result on the holdout, not a measured campaign outcome.
 
 ## Decisions
 

@@ -15,4 +15,4 @@ Use only after confirming your exact role and contribution. These bullets do not
 
 ## Business analytics
 
-- Evaluated targeting thresholds for an imbalanced conversion model; the submitted research study reports that the top 0.78% of ranked users captured 95.83% of conversions, a precision of about 15% (roughly 120x the base rate).
+- Evaluated targeting thresholds for an imbalanced conversion model; the submitted research study reports that the top 0.78% of ranked users captured 95.83% of conversions, a precision of 15.26% (123.7x lift over random sending).

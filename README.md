@@ -2,6 +2,8 @@
 
 [한국어](README.ko.md) · [Case study](PORTFOLIO.md)
 
+*A Data-Centric AI Framework for E-Commerce Purchase Conversion Prediction via Dynamic Marketing Knowledge Integration*: first-author paper (with Kyung-won Kim, corresponding), forthcoming in *마케팅연구* (Korean Marketing Association), November 2026.
+
 Predicts which recipients of e-commerce CRM messages will buy, using features
 built from marketing theory (purchase cycle, response timing, message fatigue,
 channel fit) on about 172 million REES46 messaging logs, where 0.1234% of
@@ -13,8 +15,8 @@ matters is how many buyers a ranking finds and how many messages it wastes.
 **Result (manuscript, original-distribution holdout).** Domain features raised
 XGBoost PR-AUC from 0.3177 to 0.3620 and recall from 0.3074 to 0.5230; precision
 fell from 0.4199 to 0.2991. Contacting only the top 0.78% of scores captured
-95.83% of conversions, a precision of about 15% and roughly 120x the base rate
-(derived from the reported recall, selection share, and conversion rate).
+95.83% of conversions at a precision of 15.26%, a lift of 123.7x over random
+sending; the top 10,000 messages reached 53.20% precision (431.1x).
 
 ## Research question
 
@@ -59,8 +61,13 @@ Manuscript-reported XGBoost, original-distribution holdout:
 | F2 | 0.3248 | 0.4549 |
 | PR-AUC | 0.3177 | 0.3620 |
 
-**Top-0.78% targeting:** recall 95.83%, precision about 15%, lift roughly 120x
-(derived values).
+**Top-K targeting (manuscript, 25,798,280-message test set):**
+
+| Top K | Share | Precision@K | Recall | Lift |
+|---|---:|---:|---:|---:|
+| 10,000 | 0.04% | 53.20% | 16.71% | 431.1x |
+| 50,000 | 0.19% | 31.16% | 48.94% | 252.5x |
+| 200,000 | 0.78% | 15.26% | 95.83% | 123.7x |
 
 **Run retained in this repository** (smaller sample, `final_data_100k_64.parquet`,
 64 features, 1,499,900-row holdout; `research/predict/result_xgb.json`):
@@ -109,7 +116,7 @@ Other entry points: `research/preprocessing_fast.py` (features),
 
 ## Limitations
 
-- Manuscript under peer review and not included; raw logs not redistributed.
+- Manuscript text not included before publication; raw logs not redistributed.
 - Package versions of the original runs were not recorded; exact numerical
   reproduction is not guaranteed.
 - Random holdout on one platform's observational data; no causal estimate.
