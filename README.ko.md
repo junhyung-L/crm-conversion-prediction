@@ -8,7 +8,7 @@ CRM 메시지를 받은 고객 중 24시간 안에 구매할 고객을 예측합
 
 **결과.** 원분포 홀드아웃에서 도메인 변수를 더한 XGBoost가 9종 모형 중 F1(0.3806), F2(0.4549), PR-AUC(0.3620)가 가장 높았고, 재현율은 베이스라인 대비 0.3074에서 0.5230으로 올랐습니다. 상위 0.78% 메시지만 발송하면 전환의 95.83%를 포착했고(정밀도 15.26%, lift 123.7배), 상위 1만 건의 정밀도는 53.20%(lift 431.1배)였습니다.
 
-**범위.** 한 플랫폼의 관찰 데이터로 수행한 오프라인 홀드아웃 평가이며, 인과 효과가 아니라 예측 기여를 보여줍니다. 데이터는 포함하지 않았습니다. 상단 수치는 논문 표 3·7(전체 테스트셋) 기준이고, 저장된 `research/predict/result_xgb.json`은 반감기 민감도 표(표 6: PR-AUC 0.3534, F1 0.3833)의 기준이 된 1,000만 행 표본 실행이며 `python research\verify_baseline.py`로 데이터 없이 점검할 수 있습니다.
+**범위.** 한 플랫폼의 관찰 데이터로 수행한 오프라인 홀드아웃 평가이며, 인과 효과가 아니라 예측 기여를 보여줍니다. 데이터는 포함하지 않았습니다. 상단 수치는 논문 표 3·7(전체 테스트셋) 기준이고, 저장된 `research/predict/result_xgb.json`은 반감기 민감도 표(표 6: PR-AUC 0.3534, F1 0.3833)의 기준이 된 1,000만 행 표본 실행입니다. `python research\verify_baseline.py`는 이 파일이 보고 수치와 일치하는지 확인합니다(재실행이 아닌 파일 검증).
 
 ## 연구 질문
 
@@ -84,7 +84,7 @@ python research\xgb.py                     # Optuna + 5-Fold CV + 홀드아웃
 python research\run_xgb_tau_sweep.py       # 반감기 민감도
 ```
 
-실험은 Python 3.12.11에서 실행했습니다. 당시 패키지 버전은 기록되지 않아 `requirements.txt`는 2026-11 점검 환경(Python 3.13.2) 버전으로 고정했습니다. 데이터가 없으면 `python research\verify_baseline.py`로 보관된 결과 파일을 점검할 수 있습니다. 다른 모형은 `research/RF.py`, `MLP.py`, `CNN.py`, `RNN.py`, `LSTM.py`, `CNNLSTM.py`, `RNNLSTM.py`, `tabnet.py`입니다. 자세한 내용은 [research/RUN_MANIFEST.md](research/RUN_MANIFEST.md)에 있습니다.
+실험은 Python 3.12.11에서 실행했습니다. 당시 패키지 버전은 기록되지 않아 `requirements.txt`는 2026-11 점검 환경(Python 3.13.2) 버전으로 고정했습니다. 데이터가 없으면 `python research\verify_baseline.py`는 이 파일이 보고 수치와 일치하는지 확인합니다(재실행이 아닌 파일 검증). 다른 모형은 `research/RF.py`, `MLP.py`, `CNN.py`, `RNN.py`, `LSTM.py`, `CNNLSTM.py`, `RNNLSTM.py`, `tabnet.py`입니다. 자세한 내용은 [research/RUN_MANIFEST.md](research/RUN_MANIFEST.md)에 있습니다.
 
 ## 한계
 
@@ -110,3 +110,7 @@ images/paper/                  # 그림
 ```
 
 [사례 연구](PORTFOLIO.ko.md) · [학술 요약](docs/ACADEMIC_SUMMARY.md)
+
+## 라이선스
+
+오픈소스 라이선스 없음: 코드와 문서는 열람용으로 공개하며, 재사용하려면 허락이 필요합니다.

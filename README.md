@@ -21,7 +21,7 @@ contribution, not causal effect. Data not included. Headline numbers are the
 paper's (Tables 3 and 7, full test set); the stored
 `research/predict/result_xgb.json` is the 10M-row sample run behind the
 half-life table (Table 6: PR-AUC 0.3534, F1 0.3833), which
-`python research\verify_baseline.py` checks without data.
+`python research\verify_baseline.py` compares against the reported values (a file check, not a rerun).
 
 ## Research question
 
@@ -118,8 +118,8 @@ python research\run_xgb_tau_sweep.py       # half-life sensitivity
 
 The experiments ran on Python 3.12.11; their package versions were not
 recorded, so `requirements.txt` pins the 2026-11 review environment (Python
-3.13.2). Without data, `python research\verify_baseline.py` checks the stored
-result file. Other models: `research/RF.py`, `MLP.py`, `CNN.py`, `RNN.py`, `LSTM.py`,
+3.13.2). Without data, `python research\verify_baseline.py` compares the stored
+result file against the reported values (a file check, not a rerun). Other models: `research/RF.py`, `MLP.py`, `CNN.py`, `RNN.py`, `LSTM.py`,
 `CNNLSTM.py`, `RNNLSTM.py`, `tabnet.py`. See
 [research/RUN_MANIFEST.md](research/RUN_MANIFEST.md).
 
@@ -150,3 +150,7 @@ images/paper/                  # figures
 ```
 
 [Case study](PORTFOLIO.md) · [Academic summary](docs/ACADEMIC_SUMMARY.md)
+
+## License
+
+No open-source license: the code and documents are public for review; reuse requires permission.
