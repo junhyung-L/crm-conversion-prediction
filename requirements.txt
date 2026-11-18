@@ -1,11 +1,13 @@
-# Package names were extracted from imports. Original package versions are not recorded.
-# Pin them from the environment that produced the baseline before claiming exact reproduction.
-numpy
-pandas
-pyarrow
-scikit-learn
-xgboost
-optuna
-torch
+# Pinned to the environment used for the 2026-11 review; original run versions were not recorded.
+# The experiments ran on Python 3.12.11 (notebook metadata, conda env "ljh_312"); these pins
+# come from the review environment (Python 3.13.2).
+numpy==2.4.2
+pandas==3.0.1
+pyarrow==23.0.1
+scikit-learn==1.6.1
+xgboost==3.3.0
+optuna==4.9.0
+torch==2.13.0
+numba==0.65.1
+# Not installed in the review environment, so no version could be pinned (research/tabnet.py only):
 pytorch-tabnet
-numba

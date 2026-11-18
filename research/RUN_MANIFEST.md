@@ -25,4 +25,18 @@ python research\verify_baseline.py --result "$env:MFA_RESULTS_DIR\result_xgb.jso
 ```
 
 An exact match can require a matched Python/library environment and the same hardware settings.
-The original dependency versions are not stored in this repository, so exact package versions are unknown.
+The experiments ran on Python 3.12.11 (notebook metadata, conda env `ljh_312`). Their package
+versions were not recorded; `requirements.txt` pins the 2026-11 review environment (Python 3.13.2),
+in which `verify_baseline.py` passes. `pytorch-tabnet` was not installed there and stays unpinned.
+
+## Top-K targeting scripts
+
+- `predict/compute_tau_targeting_metrics.py` is the script `experiments.ipynb` ran to produce the
+  stored `predict/tau_sweep_results/tau_targeting_metrics.{json,csv}`.
+- `compute_tau_targeting_metrics.py` (this folder) is the maintained version that uses
+  `split_utils` (customer-level split, five grouped folds). Set the data and result paths
+  (`research/tau_sweep_data`, `research/tau_sweep_results`) before running it.
+
+The backup `result_xgb_1_00x.invalid_20260813_230614.json` (a broken 1.00x result renamed before
+the rerun, see `experiments.ipynb`) was removed in the 2026-11 review; `result_xgb_1_00x.json` is
+the valid rerun.

@@ -84,7 +84,7 @@ python research\xgb.py                     # Optuna + 5-Fold CV + 홀드아웃
 python research\run_xgb_tau_sweep.py       # 반감기 민감도
 ```
 
-데이터가 없으면 `python research\verify_baseline.py`로 보관된 결과 파일을 점검할 수 있습니다. 다른 모형은 `research/RF.py`, `MLP.py`, `CNN.py`, `RNN.py`, `LSTM.py`, `CNNLSTM.py`, `RNNLSTM.py`, `tabnet.py`입니다. 자세한 내용은 [research/RUN_MANIFEST.md](research/RUN_MANIFEST.md)에 있습니다.
+실험은 Python 3.12.11에서 실행했습니다. 당시 패키지 버전은 기록되지 않아 `requirements.txt`는 2026-11 점검 환경(Python 3.13.2) 버전으로 고정했습니다. 데이터가 없으면 `python research\verify_baseline.py`로 보관된 결과 파일을 점검할 수 있습니다. 다른 모형은 `research/RF.py`, `MLP.py`, `CNN.py`, `RNN.py`, `LSTM.py`, `CNNLSTM.py`, `RNNLSTM.py`, `tabnet.py`입니다. 자세한 내용은 [research/RUN_MANIFEST.md](research/RUN_MANIFEST.md)에 있습니다.
 
 ## 한계
 

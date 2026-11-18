@@ -116,8 +116,10 @@ python research\xgb.py                     # Optuna + 5-fold CV + holdout
 python research\run_xgb_tau_sweep.py       # half-life sensitivity
 ```
 
-Without data, `python research\verify_baseline.py` checks the stored result
-file. Other models: `research/RF.py`, `MLP.py`, `CNN.py`, `RNN.py`, `LSTM.py`,
+The experiments ran on Python 3.12.11; their package versions were not
+recorded, so `requirements.txt` pins the 2026-11 review environment (Python
+3.13.2). Without data, `python research\verify_baseline.py` checks the stored
+result file. Other models: `research/RF.py`, `MLP.py`, `CNN.py`, `RNN.py`, `LSTM.py`,
 `CNNLSTM.py`, `RNNLSTM.py`, `tabnet.py`. See
 [research/RUN_MANIFEST.md](research/RUN_MANIFEST.md).
 
