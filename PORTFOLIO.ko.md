@@ -4,7 +4,7 @@
 
 ## 요약
 
-제1저자 논문(교신저자 김경원, 인천대학교 DIVE Lab), 『마케팅연구』(한국마케팅학회) 2026년 11월 게재 예정: 「동태적 마케팅 지식 통합을 통한 이커머스 구매 전환 예측 프레임워크: 데이터 중심 AI 접근법」.
+제1저자 논문(교신저자 김경원, 인천대학교 DIVE Lab), 『마케팅연구』(한국마케팅학회) 2026년 11월 게재 예정: 「동태적 마케팅 지식 통합을 통한 이커머스 구매 전환 예측 프레임워크: 데이터 중심 AI 접근법」. 같은 데이터와 변수를 다룬 국제학술대회 논문 「Context-Aware Conversion Intelligence: A Data-Centric and Resource-Efficient Framework for Ultra-Sparse Multichannel E-Commerce Interactions」(김경원, 이준형)이 Ubi-Media 2027(제15회 International Conference on Ubi-Media Computing, 2027년 1월 일본 오키나와) 발표 논문으로 채택되었습니다.
 
 CRM 메시지의 0.1234%만 구매로 이어지는 환경에서, 마케팅 이론을 시간에 따라 변하는 변수로 바꾸는 것이 모형 복잡도를 높이는 것보다 효과적인지 검증했다. REES46 메시지 1억 7,200만 건에서 이론 기반 4대 변수군을 더한 XGBoost가 9종 모형 중 F1(0.3806), F2(0.4549), PR-AUC(0.3620)가 가장 높았고, 재현율을 0.3074에서 0.5230으로 끌어올렸다. 상위 0.78% 메시지만 발송하면 전환의 95.83%를 포착했다(정밀도 15.26%, lift 123.7배).
 

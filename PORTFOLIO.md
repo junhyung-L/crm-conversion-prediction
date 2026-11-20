@@ -4,7 +4,7 @@
 
 ## Summary
 
-First-author paper (with Kyungwon Kim, corresponding author; DIVE Lab, Incheon National University), forthcoming in *마케팅연구* (Korean Marketing Association), November 2026: *A Data-Centric AI Framework for E-Commerce Purchase Conversion Prediction via Dynamic Marketing Knowledge Integration*.
+First-author paper (with Kyungwon Kim, corresponding author; DIVE Lab, Incheon National University), forthcoming in *마케팅연구* (Korean Marketing Association), November 2026: *A Data-Centric AI Framework for E-Commerce Purchase Conversion Prediction via Dynamic Marketing Knowledge Integration*. Companion conference paper on the same data and features: *Context-Aware Conversion Intelligence: A Data-Centric and Resource-Efficient Framework for Ultra-Sparse Multichannel E-Commerce Interactions* (Kyungwon Kim, Junhyung Lee), accepted for presentation at Ubi-Media 2027 (15th International Conference on Ubi-Media Computing, Okinawa, January 2027).
 
 The study asks whether marketing theory, turned into time-varying features, helps more than model complexity when only 0.1234% of CRM messages lead to a purchase. On 172 million REES46 messages, XGBoost with four theory-based feature groups had the best F1 (0.3806), F2 (0.4549), and PR-AUC (0.3620) of nine models, and lifted recall from 0.3074 to 0.5230. Sending only the top 0.78% of messages captured 95.83% of conversions at 15.26% precision (123.7x lift).
 

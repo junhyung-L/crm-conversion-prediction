@@ -4,6 +4,8 @@
 
 **이준형**(제1저자), 김경원(교신저자). 『마케팅연구』(한국마케팅학회), 2026년 11월 게재 예정.
 
+같은 데이터와 변수를 다룬 국제학술대회 논문 「Context-Aware Conversion Intelligence: A Data-Centric and Resource-Efficient Framework for Ultra-Sparse Multichannel E-Commerce Interactions」(김경원, 이준형)이 Ubi-Media 2027(제15회 International Conference on Ubi-Media Computing, 2027년 1월 일본 오키나와) 발표 논문으로 채택되었습니다.
+
 CRM 메시지를 받은 고객 중 24시간 안에 구매할 고객을 예측합니다. 전환율은 0.1234%에 불과합니다. 마케팅 이론에서 도출한 4대 동태적 변수군(구매·재구매 주기, 시계열적 반응, 마케팅 피로도, 마케팅 채널 효과성)을 베이스라인에 더하고, REES46 메시지 1억 7,200만 건에서 9종 모형을 비교했습니다.
 
 **결과.** 원분포 홀드아웃에서 도메인 변수를 더한 XGBoost가 9종 모형 중 F1(0.3806), F2(0.4549), PR-AUC(0.3620)가 가장 높았고, 재현율은 베이스라인 대비 0.3074에서 0.5230으로 올랐습니다. 상위 0.78% 메시지만 발송하면 전환의 95.83%를 포착했고(정밀도 15.26%, lift 123.7배), 상위 1만 건의 정밀도는 53.20%(lift 431.1배)였습니다.

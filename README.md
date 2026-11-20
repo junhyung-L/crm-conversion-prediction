@@ -4,6 +4,8 @@
 
 **Junhyung Lee** (first author), Kyungwon Kim (corresponding). *마케팅연구* (Korean Marketing Association), forthcoming November 2026.
 
+Companion conference paper on the same data and features: *Context-Aware Conversion Intelligence: A Data-Centric and Resource-Efficient Framework for Ultra-Sparse Multichannel E-Commerce Interactions* (Kyungwon Kim, Junhyung Lee), accepted for presentation at Ubi-Media 2027 (15th International Conference on Ubi-Media Computing, Okinawa, January 2027).
+
 Predicts which CRM message recipients will buy within 24 hours, when only
 0.1234% of messages convert. Four groups of features derived from marketing
 theory (purchase cycle, temporal response, marketing fatigue, channel
